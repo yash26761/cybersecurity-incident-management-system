@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "db.php";
+require_once "includes/config.php";
 
 $message = "";
 
@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($user["role"] === "admin") {
 
-                header("Location: admin_dashboard.php");
+                header("Location: admin/dashboard.php");
 
             } else {
 
@@ -57,6 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 
 <head>
+    <link rel="stylesheet" href="assets/css/style.css">
 
     <meta charset="UTF-8">
 
@@ -77,7 +78,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <style>
 
         body {
-            background: #f4f7fb;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -302,3 +302,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 
 </html>
+
+
+
+

@@ -1,0 +1,11 @@
+body {
+    background: #f4f7fb;
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+.btn {
+    border-radius: 8px;
+}

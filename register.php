@@ -1,5 +1,5 @@
 <?php
-require_once "db.php";
+require_once "includes/config.php";
 
 $message = "";
 $messageType = "";

@@ -1,14 +1,14 @@
 <?php
 session_start();
-require_once "db.php";
+require_once "../includes/config.php";
 
 if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "admin") {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
 if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
-    header("Location: admin_dashboard.php");
+    header("Location: dashboard.php");
     exit();
 }
 
@@ -85,7 +85,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows !== 1) {
-    header("Location: admin_dashboard.php");
+    header("Location: dashboard.php");
     exit();
 }
 
@@ -178,7 +178,7 @@ $incident = $result->fetch_assoc();
         </span>
 
         <a
-            href="logout.php"
+            href="../logout.php"
             class="btn btn-danger"
         >
             Logout
@@ -210,7 +210,7 @@ $incident = $result->fetch_assoc();
 
 
         <a
-            href="admin_dashboard.php"
+            href="dashboard.php"
             class="btn btn-outline-secondary"
         >
             ← Dashboard

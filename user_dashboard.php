@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "db.php";
+require_once "includes/config.php";
 
 if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
     header("Location: login.php");
@@ -27,6 +27,7 @@ $total = $myIncidents->num_rows;
 <html lang="en">
 
 <head>
+    <link rel="stylesheet" href="assets/css/style.css">
 
     <meta charset="UTF-8">
 
@@ -40,14 +41,6 @@ $total = $myIncidents->num_rows;
     >
 
     <style>
-
-        body {
-            background: #f4f7fb;
-        }
-
-        .navbar-brand {
-            font-weight: 600;
-        }
 
         .welcome-card {
             border: none;
@@ -76,10 +69,6 @@ $total = $myIncidents->num_rows;
 
         .table td {
             vertical-align: middle;
-        }
-
-        .btn {
-            border-radius: 8px;
         }
 
         .empty-state {
@@ -378,3 +367,6 @@ $total = $myIncidents->num_rows;
 </body>
 
 </html>
+
+
+

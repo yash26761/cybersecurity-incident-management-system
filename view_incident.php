@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "db.php";
+require_once "includes/config.php";
 
 if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
     header("Location: login.php");
@@ -38,6 +38,7 @@ $incident = $result->fetch_assoc();
 <html lang="en">
 
 <head>
+    <link rel="stylesheet" href="assets/css/style.css">
 
     <meta charset="UTF-8">
 
@@ -57,14 +58,6 @@ $incident = $result->fetch_assoc();
 
     <style>
 
-        body {
-            background: #f4f7fb;
-        }
-
-        .navbar-brand {
-            font-weight: 600;
-        }
-
         .details-card {
             border: none;
             border-radius: 16px;
@@ -82,10 +75,6 @@ $incident = $result->fetch_assoc();
             padding: 20px;
             min-height: 120px;
             white-space: normal;
-        }
-
-        .btn {
-            border-radius: 8px;
         }
 
         .incident-title {
@@ -398,3 +387,6 @@ $incident = $result->fetch_assoc();
 </body>
 
 </html>
+
+
+

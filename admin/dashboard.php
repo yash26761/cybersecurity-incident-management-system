@@ -1,9 +1,9 @@
 <?php
 session_start();
-require_once "db.php";
+require_once "../includes/config.php";
 
 if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "admin") {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -135,7 +135,7 @@ $recentIncidents = $conn->query("
         </span>
 
         <a
-            href="logout.php"
+            href="../logout.php"
             class="btn btn-danger"
         >
             Logout
@@ -468,7 +468,7 @@ $recentIncidents = $conn->query("
                                 <td>
 
                                     <a
-                                        href="admin_view_incident.php?id=<?php echo $incident["id"]; ?>"
+                                        href="view_incident.php?id=<?php echo $incident["id"]; ?>"
                                         class="btn btn-sm btn-outline-primary"
                                     >
                                         👁️ Open
