@@ -18,33 +18,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $status = "Open";
     $reported_by = $_SESSION["user_id"];
 
-    $sql = "INSERT INTO incidents 
-            (title, description, severity, status, reported_by, incident_date)
-            VALUES (?, ?, ?, ?, ?, ?)";
+    // Server-side validation
+    if ($title === "" || $description === "" || $severity === "" || $incident_date === "") {
 
-    $stmt = $conn->prepare($sql);
+        $message = "Please fill in all required fields.";
 
-    $stmt->bind_param(
-        "ssssss",
-        $title,
-        $description,
-        $severity,
-        $status,
-        $reported_by,
-        $incident_date
-    );
+    } elseif (!in_array($severity, ["Low", "Medium", "High", "Critical"])) {
 
-    if ($stmt->execute()) {
+        $message = "Invalid severity selected.";
 
-    header("Location: user_dashboard.php");
-    exit();
+    } else {
 
-} else {
+        $sql = "INSERT INTO incidents 
+                (title, description, severity, status, reported_by, incident_date)
+                VALUES (?, ?, ?, ?, ?, ?)";
 
-    $message = "Error reporting incident.";
+        $stmt = $conn->prepare($sql);
 
-}
+        $stmt->bind_param(
+            "ssssss",
+            $title,
+            $description,
+            $severity,
+            $status,
+            $reported_by,
+            $incident_date
+        );
 
+        if ($stmt->execute()) {
+
+            header("Location: user_dashboard.php");
+            exit();
+
+        } else {
+
+            $message = "Error reporting incident.";
+
+        }
+    }
 }
 ?>
 
@@ -77,13 +88,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </span>
 
         <a href="user_dashboard.php" class="btn btn-secondary">
-    Dashboard
+            Dashboard
         </a>
 
     </div>
 
 </nav>
-
 
 <div class="container mt-5">
 
@@ -93,18 +103,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <h2 class="mb-4">Report Cybersecurity Incident</h2>
 
-
             <?php if ($message != ""): ?>
 
-                <div class="alert alert-success">
+                <div class="alert alert-danger">
                     <?php echo htmlspecialchars($message); ?>
                 </div>
 
             <?php endif; ?>
 
-
             <form method="POST">
-
 
                 <div class="mb-3">
 
@@ -122,7 +129,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 </div>
 
-
                 <div class="mb-3">
 
                     <label class="form-label">
@@ -138,7 +144,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     ></textarea>
 
                 </div>
-
 
                 <div class="mb-3">
 
@@ -162,8 +167,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 </div>
 
-
-
                 <div class="mb-3">
 
                     <label class="form-label">
@@ -179,14 +182,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 </div>
 
-
                 <button
                     type="submit"
                     class="btn btn-primary"
                 >
                     Report Incident
                 </button>
-
 
                 <a
                     href="user_dashboard.php"
