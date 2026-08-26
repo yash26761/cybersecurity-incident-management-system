@@ -7,6 +7,18 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "admin") {
     exit();
 }
 
+
+// Get selected status filter
+
+$selectedStatus = $_GET["status"] ?? "";
+
+$allowedStatuses = ["Open", "In Progress", "Resolved"];
+
+if ($selectedStatus !== "" && !in_array($selectedStatus, $allowedStatuses)) {
+    $selectedStatus = "";
+}
+
+
 // Get incident counts
 
 $totalResult = $conn->query(
@@ -33,14 +45,31 @@ $resolvedResult = $conn->query(
 $resolvedIncidents = $resolvedResult->fetch_assoc()["total"];
 
 
-// Get recent incidents
+// Get incidents based on selected filter
 
-$recentIncidents = $conn->query("
-    SELECT id, title, severity, status, created_at
-    FROM incidents
-    ORDER BY id DESC
-    LIMIT 5
-");
+if ($selectedStatus !== "") {
+
+    $recentStmt = $conn->prepare("
+        SELECT id, title, severity, status, created_at
+        FROM incidents
+        WHERE status = ?
+        ORDER BY id DESC
+    ");
+
+    $recentStmt->bind_param("s", $selectedStatus);
+    $recentStmt->execute();
+
+    $recentIncidents = $recentStmt->get_result();
+
+} else {
+
+    $recentIncidents = $conn->query("
+        SELECT id, title, severity, status, created_at
+        FROM incidents
+        ORDER BY id DESC
+    ");
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -84,6 +113,7 @@ $recentIncidents = $conn->query("
             border: none;
             border-radius: 16px;
             transition: transform 0.2s;
+            cursor: pointer;
         }
 
         .stat-card:hover {
@@ -114,6 +144,10 @@ $recentIncidents = $conn->query("
 
         .empty-state {
             padding: 40px 20px;
+        }
+
+        .active-filter {
+            border: 2px solid #212529;
         }
 
     </style>
@@ -179,25 +213,35 @@ $recentIncidents = $conn->query("
 
         <div class="col-6 col-md-3">
 
-            <div class="card stat-card shadow-sm h-100">
+            <a
+                href="dashboard.php"
+                class="text-decoration-none text-dark"
+            >
 
-                <div class="card-body p-4">
+                <div
+                    class="card stat-card shadow-sm h-100
+                    <?php echo ($selectedStatus === "") ? "active-filter" : ""; ?>"
+                >
 
-                    <p class="text-muted mb-1">
-                        Total Incidents
-                    </p>
+                    <div class="card-body p-4">
 
-                    <div class="stat-number">
-                        <?php echo $totalIncidents; ?>
+                        <p class="text-muted mb-1">
+                            Total Incidents
+                        </p>
+
+                        <div class="stat-number">
+                            <?php echo $totalIncidents; ?>
+                        </div>
+
+                        <small class="text-muted">
+                            All reported incidents
+                        </small>
+
                     </div>
-
-                    <small class="text-muted">
-                        All reported incidents
-                    </small>
 
                 </div>
 
-            </div>
+            </a>
 
         </div>
 
@@ -206,25 +250,35 @@ $recentIncidents = $conn->query("
 
         <div class="col-6 col-md-3">
 
-            <div class="card stat-card shadow-sm h-100">
+            <a
+                href="dashboard.php?status=Open"
+                class="text-decoration-none text-dark"
+            >
 
-                <div class="card-body p-4">
+                <div
+                    class="card stat-card shadow-sm h-100
+                    <?php echo ($selectedStatus === "Open") ? "active-filter" : ""; ?>"
+                >
 
-                    <p class="text-muted mb-1">
-                        Open
-                    </p>
+                    <div class="card-body p-4">
 
-                    <div class="stat-number text-danger">
-                        <?php echo $openIncidents; ?>
+                        <p class="text-muted mb-1">
+                            Open
+                        </p>
+
+                        <div class="stat-number text-danger">
+                            <?php echo $openIncidents; ?>
+                        </div>
+
+                        <small class="text-muted">
+                            Awaiting action
+                        </small>
+
                     </div>
-
-                    <small class="text-muted">
-                        Awaiting action
-                    </small>
 
                 </div>
 
-            </div>
+            </a>
 
         </div>
 
@@ -233,25 +287,35 @@ $recentIncidents = $conn->query("
 
         <div class="col-6 col-md-3">
 
-            <div class="card stat-card shadow-sm h-100">
+            <a
+                href="dashboard.php?status=In%20Progress"
+                class="text-decoration-none text-dark"
+            >
 
-                <div class="card-body p-4">
+                <div
+                    class="card stat-card shadow-sm h-100
+                    <?php echo ($selectedStatus === "In Progress") ? "active-filter" : ""; ?>"
+                >
 
-                    <p class="text-muted mb-1">
-                        In Progress
-                    </p>
+                    <div class="card-body p-4">
 
-                    <div class="stat-number text-warning">
-                        <?php echo $progressIncidents; ?>
+                        <p class="text-muted mb-1">
+                            In Progress
+                        </p>
+
+                        <div class="stat-number text-warning">
+                            <?php echo $progressIncidents; ?>
+                        </div>
+
+                        <small class="text-muted">
+                            Currently being handled
+                        </small>
+
                     </div>
-
-                    <small class="text-muted">
-                        Currently being handled
-                    </small>
 
                 </div>
 
-            </div>
+            </a>
 
         </div>
 
@@ -260,25 +324,35 @@ $recentIncidents = $conn->query("
 
         <div class="col-6 col-md-3">
 
-            <div class="card stat-card shadow-sm h-100">
+            <a
+                href="dashboard.php?status=Resolved"
+                class="text-decoration-none text-dark"
+            >
 
-                <div class="card-body p-4">
+                <div
+                    class="card stat-card shadow-sm h-100
+                    <?php echo ($selectedStatus === "Resolved") ? "active-filter" : ""; ?>"
+                >
 
-                    <p class="text-muted mb-1">
-                        Resolved
-                    </p>
+                    <div class="card-body p-4">
 
-                    <div class="stat-number text-success">
-                        <?php echo $resolvedIncidents; ?>
+                        <p class="text-muted mb-1">
+                            Resolved
+                        </p>
+
+                        <div class="stat-number text-success">
+                            <?php echo $resolvedIncidents; ?>
+                        </div>
+
+                        <small class="text-muted">
+                            Successfully resolved
+                        </small>
+
                     </div>
-
-                    <small class="text-muted">
-                        Successfully resolved
-                    </small>
 
                 </div>
 
-            </div>
+            </a>
 
         </div>
 
@@ -295,11 +369,29 @@ $recentIncidents = $conn->query("
             <div class="mb-3">
 
                 <h4 class="fw-bold mb-1">
-                    Recent Incidents
+
+                    <?php
+                    if ($selectedStatus === "") {
+                        echo "All Incidents";
+                    } else {
+                        echo htmlspecialchars($selectedStatus) . " Incidents";
+                    }
+                    ?>
+
                 </h4>
 
                 <p class="text-muted mb-0">
-                    Review the latest reported cybersecurity incidents.
+
+                    <?php
+                    if ($selectedStatus === "") {
+                        echo "View all reported cybersecurity incidents.";
+                    } else {
+                        echo "View incidents currently marked as "
+                            . htmlspecialchars($selectedStatus)
+                            . ".";
+                    }
+                    ?>
+
                 </p>
 
             </div>
@@ -502,15 +594,14 @@ $recentIncidents = $conn->query("
                     </div>
 
                     <h5 class="fw-bold">
-                        No incidents reported yet
+                        No incidents found
                     </h5>
 
                     <p class="text-muted mb-0">
-                        Reported incidents will appear here.
+                        There are no incidents with this status.
                     </p>
 
                 </div>
-
 
             <?php endif; ?>
 
