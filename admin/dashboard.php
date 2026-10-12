@@ -19,55 +19,117 @@ if ($selectedStatus !== "" && !in_array($selectedStatus, $allowedStatuses)) {
 }
 
 
+// Resolve demo user id for demo presentation consistency
+$demoUserRes = $conn->query("SELECT id FROM users WHERE email = 'demo_user@incident.com' LIMIT 1");
+$demoUserId = ($demoUserRes && $demoUserRes->num_rows > 0) ? (int)$demoUserRes->fetch_assoc()["id"] : null;
+
+
 // Get incident counts
 
-$totalResult = $conn->query(
-    "SELECT COUNT(*) AS total FROM incidents"
-);
-$totalIncidents = $totalResult->fetch_assoc()["total"];
+if ($demoUserId !== null) {
+    $totalStmt = $conn->prepare("SELECT COUNT(*) AS total FROM incidents WHERE reported_by = ?");
+    $totalStmt->bind_param("i", $demoUserId);
+    $totalStmt->execute();
+    $totalIncidents = $totalStmt->get_result()->fetch_assoc()["total"];
 
+    $openStmt = $conn->prepare("SELECT COUNT(*) AS total FROM incidents WHERE reported_by = ? AND status = 'Open'");
+    $openStmt->bind_param("i", $demoUserId);
+    $openStmt->execute();
+    $openIncidents = $openStmt->get_result()->fetch_assoc()["total"];
 
-$openResult = $conn->query(
-    "SELECT COUNT(*) AS total FROM incidents WHERE status = 'Open'"
-);
-$openIncidents = $openResult->fetch_assoc()["total"];
+    $progressStmt = $conn->prepare("SELECT COUNT(*) AS total FROM incidents WHERE reported_by = ? AND status = 'In Progress'");
+    $progressStmt->bind_param("i", $demoUserId);
+    $progressStmt->execute();
+    $progressIncidents = $progressStmt->get_result()->fetch_assoc()["total"];
 
+    $resolvedStmt = $conn->prepare("SELECT COUNT(*) AS total FROM incidents WHERE reported_by = ? AND status = 'Resolved'");
+    $resolvedStmt->bind_param("i", $demoUserId);
+    $resolvedStmt->execute();
+    $resolvedIncidents = $resolvedStmt->get_result()->fetch_assoc()["total"];
+} else {
+    $totalResult = $conn->query(
+        "SELECT COUNT(*) AS total FROM incidents"
+    );
+    $totalIncidents = $totalResult->fetch_assoc()["total"];
 
-$progressResult = $conn->query(
-    "SELECT COUNT(*) AS total FROM incidents WHERE status = 'In Progress'"
-);
-$progressIncidents = $progressResult->fetch_assoc()["total"];
+    $openResult = $conn->query(
+        "SELECT COUNT(*) AS total FROM incidents WHERE status = 'Open'"
+    );
+    $openIncidents = $openResult->fetch_assoc()["total"];
 
+    $progressResult = $conn->query(
+        "SELECT COUNT(*) AS total FROM incidents WHERE status = 'In Progress'"
+    );
+    $progressIncidents = $progressResult->fetch_assoc()["total"];
 
-$resolvedResult = $conn->query(
-    "SELECT COUNT(*) AS total FROM incidents WHERE status = 'Resolved'"
-);
-$resolvedIncidents = $resolvedResult->fetch_assoc()["total"];
+    $resolvedResult = $conn->query(
+        "SELECT COUNT(*) AS total FROM incidents WHERE status = 'Resolved'"
+    );
+    $resolvedIncidents = $resolvedResult->fetch_assoc()["total"];
+}
 
 
 // Get incidents based on selected filter
 
 if ($selectedStatus !== "") {
 
-    $recentStmt = $conn->prepare("
-        SELECT id, title, severity, status, created_at
-        FROM incidents
-        WHERE status = ?
-        ORDER BY id DESC
-    ");
+    if ($demoUserId !== null) {
+        $recentStmt = $conn->prepare("
+            SELECT id, title, severity, status, created_at, display_id
+            FROM (
+                SELECT id, title, severity, status, created_at,
+                       ROW_NUMBER() OVER (ORDER BY id ASC) AS display_id
+                FROM incidents
+                WHERE reported_by = ?
+            ) AS numbered_incidents
+            WHERE status = ?
+            ORDER BY id DESC
+        ");
+        $recentStmt->bind_param("is", $demoUserId, $selectedStatus);
+    } else {
+        $recentStmt = $conn->prepare("
+            SELECT id, title, severity, status, created_at, display_id
+            FROM (
+                SELECT id, title, severity, status, created_at,
+                       ROW_NUMBER() OVER (ORDER BY id ASC) AS display_id
+                FROM incidents
+            ) AS numbered_incidents
+            WHERE status = ?
+            ORDER BY id DESC
+        ");
+        $recentStmt->bind_param("s", $selectedStatus);
+    }
 
-    $recentStmt->bind_param("s", $selectedStatus);
     $recentStmt->execute();
-
     $recentIncidents = $recentStmt->get_result();
 
 } else {
 
-    $recentIncidents = $conn->query("
-        SELECT id, title, severity, status, created_at
-        FROM incidents
-        ORDER BY id DESC
-    ");
+    if ($demoUserId !== null) {
+        $recentStmt = $conn->prepare("
+            SELECT id, title, severity, status, created_at, display_id
+            FROM (
+                SELECT id, title, severity, status, created_at,
+                       ROW_NUMBER() OVER (ORDER BY id ASC) AS display_id
+                FROM incidents
+                WHERE reported_by = ?
+            ) AS numbered_incidents
+            ORDER BY id DESC
+        ");
+        $recentStmt->bind_param("i", $demoUserId);
+        $recentStmt->execute();
+        $recentIncidents = $recentStmt->get_result();
+    } else {
+        $recentIncidents = $conn->query("
+            SELECT id, title, severity, status, created_at, display_id
+            FROM (
+                SELECT id, title, severity, status, created_at,
+                       ROW_NUMBER() OVER (ORDER BY id ASC) AS display_id
+                FROM incidents
+            ) AS numbered_incidents
+            ORDER BY id DESC
+        ");
+    }
 }
 
 ?>
@@ -436,7 +498,7 @@ if ($selectedStatus !== "") {
 
                                 <td class="fw-semibold">
 
-                                    #<?php echo $incident["id"]; ?>
+                                    #<?php echo $incident["display_id"]; ?>
 
                                 </td>
 

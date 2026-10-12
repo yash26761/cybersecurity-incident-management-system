@@ -307,6 +307,22 @@ if ($email === "" || $password === "") {
                     </form>
 
 
+                    <!-- Demo Guide Quick Fill -->
+                    <div class="mt-4 pt-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted small fw-semibold">Demo Accounts</span>
+                            <span class="badge bg-secondary-subtle text-secondary small">Demo Mode</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm fw-semibold" id="btnDemoUser" onclick="fillDemo('user')">
+                                Use Demo User
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm fw-semibold" id="btnDemoAdmin" onclick="fillDemo('admin')">
+                                Use Demo Admin
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Register -->
 
                     <div class="text-center mt-4">
@@ -345,6 +361,28 @@ if ($email === "" || $password === "") {
 
 </div>
 
+<script>
+function fillDemo(role) {
+    const emailField = document.getElementById('email');
+    const passwordField = document.getElementById('password');
+    if (role === 'user') {
+        emailField.value = 'demo_user@incident.com';
+        passwordField.value = 'User@Demo123';
+    } else if (role === 'admin') {
+        emailField.value = 'demo_admin@incident.com';
+        passwordField.value = 'Admin@Demo123';
+    }
+}
+
+// Automatically populate if navigated with ?demo=user or ?demo=admin
+document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const demo = params.get('demo');
+    if (demo === 'user' || demo === 'admin') {
+        fillDemo(demo);
+    }
+});
+</script>
 
 </body>
 

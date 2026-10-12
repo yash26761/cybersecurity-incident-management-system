@@ -9,9 +9,13 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
 
 $userId = $_SESSION["user_id"];
 
-$sql = "SELECT id, title, severity, status, incident_date
-        FROM incidents
-        WHERE reported_by = ?
+$sql = "SELECT id, title, severity, status, incident_date, display_id
+        FROM (
+            SELECT id, title, severity, status, incident_date,
+                   ROW_NUMBER() OVER (ORDER BY id ASC) AS display_id
+            FROM incidents
+            WHERE reported_by = ?
+        ) AS numbered_incidents
         ORDER BY id DESC";
 
 $stmt = $conn->prepare($sql);
@@ -392,7 +396,7 @@ $resolvedIncidents = $resolvedStmt->get_result()->fetch_assoc()["total"];
                             >
 
                                 <td class="fw-semibold">
-                                    #<?php echo $incident["id"]; ?>
+                                    #<?php echo $incident["display_id"]; ?>
                                 </td>
 
 

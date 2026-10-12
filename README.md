@@ -86,11 +86,13 @@ cybersecurity_incident_system/
 ├── includes/
 │   └── config.php
 │
+├── DEMO_GUIDE.md
 ├── index.php
 ├── login.php
 ├── logout.php
 ├── register.php
 ├── report_incident.php
+├── seed_demo.php
 ├── user_dashboard.php
 ├── view_incident.php
 ├── .gitignore
@@ -179,6 +181,34 @@ Each incident can have one of the following statuses:
 - **In Progress** — Administrator is reviewing or working on the incident.
 - **Resolved** — The incident has been addressed.
 
+## 🎭 Demo Mode & Accounts
+
+For presentation and evaluation purposes, the system includes ready-to-use demo accounts and realistic sample incidents.
+
+### 🔑 Demo Accounts
+
+| Role | Email | Password | Dashboard |
+|---|---|---|---|
+| Demo User | `demo_user@incident.com` | `User@Demo123` | `user_dashboard.php` |
+| Demo Admin | `demo_admin@incident.com` | `Admin@Demo123` | `admin/dashboard.php` |
+
+- **Quick-Fill Buttons**: The Landing Page (`index.php`) and Login Page (`login.php`) include **"Use Demo User"** and **"Use Demo Admin"** buttons that automatically populate the login credentials without manual typing.
+
+### 📋 Demo Incidents & Display Numbering
+
+The application includes five realistic sample incidents representing different attack vectors, severities, and lifecycle statuses:
+
+- **#1** — Executive Impersonation Phishing Email *(oldest)*
+- **#2** — Repeated Failed SSH & Web Portal Login Attempts
+- **#3** — Ransomware Trojan Detected on Finance Workstation
+- **#4** — Anomalous Outbound Data Transfer Over Port 443
+- **#5** — Compromised Vendor VPN Credential Revocation *(newest)*
+
+#### Numbering & Ordering Behavior:
+
+- **Newest First**: The newest incident (**#5**) appears at the top of the table on both the User Dashboard and Admin Dashboard.
+- **Display IDs vs. Database Primary Keys**: Incident display numbers (**#1** through **#5**) are calculated in chronological order based only on the active demo incidents. They are decoupled from the underlying database auto-increment primary keys, ensuring clean presentation without breaking incident detail links (`view_incident.php?id=...`).
+
 ## ⚙️ Installation & Setup
 
 ### Requirements
@@ -249,7 +279,7 @@ $password = "";
 $database = "cybersecurity_incidents";
 ```
 
-> Update the values according to your local XAMPP/MySQL configuration.
+> Note: `includes/config.php` automatically attempts connection on MySQL port `3307` and falls back to standard port `3306`. Update the values according to your local XAMPP/MySQL configuration if needed.
 
 ### Step 5 — Run the Application
 
