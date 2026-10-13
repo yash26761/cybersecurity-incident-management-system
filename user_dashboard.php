@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once "includes/config.php";
 
@@ -146,7 +146,7 @@ $resolvedIncidents = $resolvedStmt->get_result()->fetch_assoc()["total"];
     <div class="container">
 
         <span class="navbar-brand">
-            🛡️ Cybersecurity Incident Management
+            ðŸ›¡ï¸ Cybersecurity Incident Management
         </span>
 
         <a href="logout.php" class="btn btn-danger">
@@ -172,7 +172,7 @@ $resolvedIncidents = $resolvedStmt->get_result()->fetch_assoc()["total"];
                 <h2 class="fw-bold mb-2">
                     Welcome,
                     <?php echo htmlspecialchars($_SESSION["name"]); ?>
-                    👋
+                    ðŸ‘‹
                 </h2>
 
                 <p class="text-muted mb-0">
@@ -502,7 +502,7 @@ $resolvedIncidents = $resolvedStmt->get_result()->fetch_assoc()["total"];
                                         href="view_incident.php?id=<?php echo $incident["id"]; ?>"
                                         class="btn btn-sm btn-outline-primary"
                                     >
-                                        👁️ View
+                                        ðŸ‘ï¸ View
                                     </a>
 
                                 </td>
@@ -525,7 +525,7 @@ $resolvedIncidents = $resolvedStmt->get_result()->fetch_assoc()["total"];
                 >
 
                     <div class="fs-1 mb-3">
-                        🔍
+                        ðŸ”
                     </div>
 
                     <h5 class="fw-bold">
@@ -545,7 +545,7 @@ $resolvedIncidents = $resolvedStmt->get_result()->fetch_assoc()["total"];
                 <div class="text-center empty-state">
 
                     <div class="fs-1 mb-3">
-                        🛡️
+                        ðŸ›¡ï¸
                     </div>
 
                     <h5 class="fw-bold">
@@ -574,90 +574,7 @@ $resolvedIncidents = $resolvedStmt->get_result()->fetch_assoc()["total"];
 </div>
 
 
-<script>
-
-function filterIncidents(status, selectedCard) {
-
-    const rows = document.querySelectorAll(
-        "#incidentTable tbody tr"
-    );
-
-    const filterLabel = document.getElementById(
-        "filterLabel"
-    );
-
-    const noResults = document.getElementById(
-        "noResults"
-    );
-
-
-    // Remove active state from all cards
-
-    document.querySelectorAll(".stat-card").forEach(function(card) {
-
-        card.classList.remove("active");
-
-    });
-
-
-    // Add active state to selected card
-
-    selectedCard.classList.add("active");
-
-
-    let visibleRows = 0;
-
-
-    rows.forEach(function(row) {
-
-        const rowStatus = row.getAttribute(
-            "data-status"
-        );
-
-
-        if (status === "All" || rowStatus === status) {
-
-            row.style.display = "";
-
-            visibleRows++;
-
-        } else {
-
-            row.style.display = "none";
-
-        }
-
-    });
-
-
-    // Update filter label
-
-    if (status === "All") {
-
-        filterLabel.textContent = "All Incidents";
-
-    } else {
-
-        filterLabel.textContent = status;
-
-    }
-
-
-    // Show/hide no-results message
-
-    if (visibleRows === 0) {
-
-        noResults.classList.remove("d-none");
-
-    } else {
-
-        noResults.classList.add("d-none");
-
-    }
-
-}
-
-</script>
+<script src="assets/js/app.js"></script>
 
 
 </body>

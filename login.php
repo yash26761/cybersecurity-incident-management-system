@@ -208,7 +208,7 @@ if ($email === "" || $password === "") {
                 <div class="login-header">
 
                     <div class="shield">
-                        🛡️
+                        ðŸ›¡ï¸
                     </div>
 
                     <h2 class="login-title">
@@ -300,7 +300,7 @@ if ($email === "" || $password === "") {
                             type="submit"
                             class="btn btn-primary w-100 login-btn"
                         >
-                            🔐 Login
+                            ðŸ” Login
                         </button>
 
 
@@ -361,33 +361,8 @@ if ($email === "" || $password === "") {
 
 </div>
 
-<script>
-function fillDemo(role) {
-    const emailField = document.getElementById('email');
-    const passwordField = document.getElementById('password');
-    if (role === 'user') {
-        emailField.value = 'demo_user@incident.com';
-        passwordField.value = 'User@Demo123';
-    } else if (role === 'admin') {
-        emailField.value = 'demo_admin@incident.com';
-        passwordField.value = 'Admin@Demo123';
-    }
-}
-
-// Automatically populate if navigated with ?demo=user or ?demo=admin
-document.addEventListener('DOMContentLoaded', function() {
-    const params = new URLSearchParams(window.location.search);
-    const demo = params.get('demo');
-    if (demo === 'user' || demo === 'admin') {
-        fillDemo(demo);
-    }
-});
-</script>
+<script src="assets/js/app.js"></script>
 
 </body>
 
 </html>
-
-
-
-

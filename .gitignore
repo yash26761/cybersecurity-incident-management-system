@@ -18,3 +18,9 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Private database credentials
+includes/db_credentials.php
+
+# Local safety backups
+*.before-js-backup
