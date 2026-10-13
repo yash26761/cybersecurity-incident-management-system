@@ -87,7 +87,8 @@ cybersecurity_incident_system/
 │
 ├── assets/
 │   ├── css/
-│
+│   |── js
+|       └── app.js
 ├── includes/
 │   └── config.php
 │
